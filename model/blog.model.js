@@ -4,8 +4,7 @@ const file = {
   title: { type: String, require: true },
   body: { type: String, require: true },
   comments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'comments' }],
-  likes: { type: Number },
-  dislikes: { type: Number },
+  likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'user' }],
   avatar: { type: String, require: true },
 };
 const BlogSchema = new mongoose.Schema(file, {

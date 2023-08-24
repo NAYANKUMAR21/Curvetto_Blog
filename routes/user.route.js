@@ -7,12 +7,11 @@ const jwt = require('jsonwebtoken');
 const saltRounds = Number(process.env.SALT_ROUNDS);
 app.post('/login', async (req, res) => {
   const { username, password } = req.body;
-  console.log(username, password);
+
   try {
     const checkUser = await UserModel.findOne({ username: username });
-    console.log('user -> route', checkUser);
 
-    if (checkUser) {
+    if (checkUser && password.length > 4) {
       return bcrypt.compare(
         password,
         checkUser.password,
@@ -23,10 +22,7 @@ app.post('/login', async (req, res) => {
           }
           const accessToken = jwt.sign(
             { userId: checkUser._id },
-            process.env.JWT_KEY,
-            {
-              expiresIn: '15m',
-            }
+            process.env.JWT_KEY
           );
           const refreshToken = jwt.sign(
             { userId: checkUser._id },
@@ -41,7 +37,6 @@ app.post('/login', async (req, res) => {
     }
     return res.status(401).send({ message: 'User does not exist' });
   } catch (er) {
-    console.log(er.message);
     return res.status(400).send({ message: er.message });
   }
 });
@@ -49,9 +44,8 @@ app.post('/login', async (req, res) => {
 app.post('/signup', async (req, res) => {
   const { name, username, password, birthdate } = req.body;
   try {
-    console.log(birthdate);
     const checkUser = await UserModel.findOne({ username: username });
-    console.log('23');
+
     if (checkUser) {
       return res
         .status(409)
@@ -61,7 +55,6 @@ app.post('/signup', async (req, res) => {
     bcrypt.hash(password, saltRounds, async function (err, hash) {
       // Store hash in your password DB.
       if (err) {
-        console.log(err);
         return res.status(400).send({
           message: 'Something wrong happened enter password again',
           err: err.message,
@@ -75,10 +68,7 @@ app.post('/signup', async (req, res) => {
       });
       const accessToken = jwt.sign(
         { userId: userCreated._id },
-        process.env.JWT_KEY,
-        {
-          expiresIn: '15m',
-        }
+        process.env.JWT_KEY
       );
       const refreshToken = jwt.sign(
         { userId: userCreated._id },
@@ -90,7 +80,6 @@ app.post('/signup', async (req, res) => {
         .send({ message: 'Signup successfully', accessToken, refreshToken });
     });
   } catch (er) {
-    console.log(er.response);
     return res.status(400).send({ message: er.message });
   }
 });
