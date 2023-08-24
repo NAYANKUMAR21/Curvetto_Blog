@@ -4,7 +4,6 @@ const BlogModel = require('../model/blog.model');
 const app = Router();
 const jwt = require('jsonwebtoken');
 const CommentsModel = require('../model/comments.model');
-const { useParams } = require('react-router-dom');
 
 let JWT_KEY = process.env.JWT_KEY;
 app.post('/post-blog', async (req, res) => {
